@@ -196,7 +196,7 @@ export const UpdateLinkMutation = extendType({
           url,
         };
 
-        await context.prisma.link.update({
+        const link = await context.prisma.link.update({
           where: {
             id,
           },
@@ -205,7 +205,7 @@ export const UpdateLinkMutation = extendType({
           },
         });
 
-        return changedLink;
+        return link;
       },
     });
   },
