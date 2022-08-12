@@ -12,6 +12,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type Feed {
+  count: Int!
+  id: ID
+  links: [Link!]!
+}
+
 type Link {
   createdAt: DateTime!
   description: String!
@@ -37,7 +43,7 @@ type Mutation {
 }
 
 type Query {
-  feed(filterStr: String, orderBy: [LinkOrderByInput!], skip: Int, take: Int): [Link!]!
+  feed(filterStr: String, orderBy: [LinkOrderByInput!], skip: Int, take: Int): Feed!
   link(id: Int!): Link
 }
 

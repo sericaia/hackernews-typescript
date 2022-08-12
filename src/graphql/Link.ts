@@ -57,11 +57,20 @@ export const Link = objectType({
   },
 });
 
-export const LinkQuery = extendType({
+export const Feed = objectType({
+  name: "Feed",
+  definition(t) {
+    t.nonNull.list.nonNull.field("links", { type: Link });
+    t.nonNull.int("count");
+    t.id("id");
+  },
+});
+
+export const FeedQuery = extendType({
   type: "Query",
   definition(t) {
-    t.nonNull.list.nonNull.field("feed", {
-      type: "Link",
+    t.nonNull.field("feed", {
+      type: "Feed",
       args: {
         filterStr: stringArg(),
         skip: intArg(),
@@ -90,7 +99,7 @@ export const LinkQuery = extendType({
           };
         }
 
-        return context.prisma.link.findMany({
+        const linksPromise = context.prisma.link.findMany({
           where: { ...filterParams },
           skip: args.skip ?? undefined,
           take: args.take ?? undefined,
@@ -98,6 +107,20 @@ export const LinkQuery = extendType({
             | Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput>
             | undefined,
         });
+
+        const countPromise = await context.prisma.link.count({
+          where: {
+            ...filterParams,
+          },
+        });
+
+        const [links, count] = await Promise.all([linksPromise, countPromise]);
+
+        return {
+          links,
+          count,
+          id: "test-id",
+        };
       },
     });
   },
