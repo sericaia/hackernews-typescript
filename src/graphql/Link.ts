@@ -1,4 +1,29 @@
-import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
+import { Prisma } from "@prisma/client";
+import {
+  arg,
+  enumType,
+  extendType,
+  inputObjectType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
+
+export const Sort = enumType({
+  name: "Sort",
+  members: ["asc", "desc"],
+});
+
+export const LinkOrderByInput = inputObjectType({
+  name: "LinkOrderByInput",
+  definition(t) {
+    t.field("description", { type: Sort });
+    t.field("url", { type: Sort });
+    t.field("createdAt", { type: Sort });
+  },
+});
 
 export const Link = objectType({
   name: "Link",
@@ -41,6 +66,10 @@ export const LinkQuery = extendType({
         filterStr: stringArg(),
         skip: intArg(),
         take: intArg(),
+        // only works for one input
+        // orderBy: LinkOrderByInput,
+        // Actually what we want is a list of several options (or nothing)
+        orderBy: arg({ type: list(nonNull(LinkOrderByInput)) }),
       },
       async resolve(parent, args, context, info) {
         let filterParams = {};
@@ -65,6 +94,9 @@ export const LinkQuery = extendType({
           where: { ...filterParams },
           skip: args.skip ?? undefined,
           take: args.take ?? undefined,
+          orderBy: args.orderBy as
+            | Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput>
+            | undefined,
         });
       },
     });
