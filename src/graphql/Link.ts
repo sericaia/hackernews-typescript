@@ -28,6 +28,7 @@ export const Link = objectType({
           .voters();
       },
     });
+    t.nonNull.dateTime("createdAt");
   },
 });
 
